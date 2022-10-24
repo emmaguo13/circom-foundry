@@ -1,0 +1,27 @@
+{
+  "name": "circom-foundry",
+  "version": "1.0.0",
+  "description": "<img align=\"right\" width=\"150\" height=\"150\" top=\"100\" src=\"./assets/readme.jpg\">",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmaguo13/circom-foundry.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emmaguo13/circom-foundry/issues"
+  },
+  "homepage": "https://github.com/emmaguo13/circom-foundry#readme",
+  "dependencies": {
+    "@gnosis.pm/safe-contracts": "^1.3.0",
+    "circomlib": "^2.0.5"
+  }
+}
