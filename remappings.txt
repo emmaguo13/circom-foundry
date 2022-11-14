@@ -1,4 +1,4 @@
 @gnosis.pm/safe-contracts=lib/safe-contracts/
 @openzeppelin/contracts-upgradeable=lib/openzeppelin-contracts-upgradeable/contracts/
 @openzeppelin/contracts=lib/openzeppelin-contracts/contracts/
-@semaphore-protocol/contracts=lib/semaphore/packages/contracts
+@semaphore-protocol=lib/semaphore/packages/contracts/

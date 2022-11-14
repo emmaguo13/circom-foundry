@@ -1,18 +1,28 @@
 pragma solidity ^0.8.0;
 
 import "zodiac/core/Module.sol";
+// import "zodiac/guard/BaseGuard.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
-import "./MerkleTreeWithHistory.sol";
+// import "./MerkleTreeWithHistory.sol";
+import {GnosisSafe} from "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
 
 contract PrivateModule is Module, ReentrancyGuard {
 
   ISemaphore public semaphore;
+  GnosisSafe public safe;
 
   uint256 groupId;
+  uint256 threshold;
+
+  // maps identity committment to username
   mapping(uint256 => bytes32) users;
 
-  event NewTxn(bytes32 data);
+  // maps address to whether or not they can be added as a member
+  // only true if address is in owners set, and also if it has not already been added
+  mapping(address => bool) possibleMember; 
+
+  event NewTxn();
   event NewUser(uint256 identityCommitment, bytes32 username);
   event ZkSigModuleSetup(
     address indexed initiator,
@@ -21,6 +31,8 @@ contract PrivateModule is Module, ReentrancyGuard {
     address target
   );
 
+  error SignerAddFailed();
+
   /// @param _owner Address of the  owner
   /// @param _avatar Address of the avatar (e.g. a Safe) basically thing executing the functions (relayer)
   /// @param _target Address of the contract that will call exec function - PASS TRANSACTIONS TO
@@ -28,7 +40,7 @@ contract PrivateModule is Module, ReentrancyGuard {
   /// @param _groupId semaphore groupId
   constructor(
     address _owner,
-    address _avatar,
+    address payable _avatar,
     address _target,
     address _semaphore,
     uint256 _groupId
@@ -40,8 +52,11 @@ contract PrivateModule is Module, ReentrancyGuard {
       _target
     );
 
-    semaphore = ISemaphore(semaphoreAddress);
+    semaphore = ISemaphore(_semaphore);
+    safe = GnosisSafe(_avatar);
+    setAllowedOwners();
     groupId = _groupId;
+    threshold = safe.getThreshold();
     semaphore.createGroup(groupId, 20, 0, address(this));
 
     setUp(initParams);
@@ -68,12 +83,31 @@ contract PrivateModule is Module, ReentrancyGuard {
     emit ZkSigModuleSetup(msg.sender, _owner, _avatar, _target);
   }
 
+  function setAllowedOwners() internal {
+    address[] memory owners = safe.getOwners();
+    uint256 len = owners.length;
+    for (uint256 i = 0; i < len; i ++) {
+      possibleMember[owners[i]] = true;
+    }
+  }
+
+  /* returns number of needed signers, to be called by frontend */
+  function getThreshold() external returns (uint256) {
+    return threshold;
+  }
+
+  // joining as a signer is now not private 
+  // TODO: what is the username supposed to be
+  // TODO: error code for not being a part of owners ?
   function joinAsSigner(uint256 identityCommitment, bytes32 username) external {
-        semaphore.addMember(groupId, identityCommitment);
-
-        users[identityCommitment] = username;
-
-        emit NewUser(identityCommitment, username);
+    // check if address is from owners
+    if (possibleMember[msg.sender] == true) {
+      semaphore.addMember(groupId, identityCommitment);
+      users[identityCommitment] = username;
+      emit NewUser(identityCommitment, username);
+    } else {
+      revert SignerAddFailed();
+    }
   }
 
   /// @dev Executes a transaction initated by the AMB
@@ -81,9 +115,10 @@ contract PrivateModule is Module, ReentrancyGuard {
   /// @param value Wei value of the transaction that should be executed
   /// @param data Data of the transaction that should be executed
   /// @param operation Operation (Call or Delegatecall) of the transaction that should be executed
-  /// @param merkleTreeRoot 
-  /// @param nullifierHash
-  /// @param proof We pass in the proof, verify it, and then execute 
+  /// @param merkleTreeRoots merkle tree root
+  /// @param nullifierHashes nullifier hash
+  /// @param proofs We pass in the proof, verify it, and then execute 
+  /// @param votes the vote on the given transaction
   // TODO: first test: just one user, one proof
   function executeTransaction(
     address to, // this is the target address, eg if you want the txn to push a button, this is the button
@@ -91,13 +126,37 @@ contract PrivateModule is Module, ReentrancyGuard {
     uint256 value,
     bytes memory data,
     Enum.Operation operation,
-    uint256 merkleTreeRoot,
-    uint256 nullifierHash,
-    uint256[8] calldata proof
+
+    uint256[] memory merkleTreeRoots,
+    uint256[] memory nullifierHashes,
+    uint256[8][] memory proofs,
+    bytes32[] memory votes
   ) public {
-    semaphore.verifyProof(groupId, merkleTreeRoot, greeting, nullifierHash, groupId, proof);
+
+    // by the time we have all of this, the threshold is basically met
+    // TODO: check if there are enough VALID sigs
+    uint256 merkleRootLen = merkleTreeRoots.length;
+    uint256 nullifierLen = nullifierHashes.length;
+    uint256 proofLen = proofs.length;
+    uint256 votesLen = votes.length;
+
+    assert(merkleRootLen == nullifierLen);
+    assert(nullifierLen == proofLen);
+    assert(proofLen == votesLen);
+
+    // have a map from identity to public key when they sign on! also pass in public key with the ecrecover stuff
+    // doesnt work because we cant pass in pub key here.. 
+    // or we can use semaphore for id gen, and use my own merkle tree stuff 
+    // but how do we check the semaphore id is the same as the public key?? 
+    // or i can have a mapping of ids to pubkeys, but also pass in the mapping to my proof, 
+    // but this would have to be from a valid source, i could have the frontend generate some
+    // valid secret value maybe?? 
+    // TODO: check after its been verified...
+    for (uint256 i = 0; i < votesLen; i ++) {
+      semaphore.verifyProof(groupId, merkleTreeRoots[i], votes[i], nullifierHashes[i], groupId, proofs[i]);
+    }
 
     require(exec(to, value, data, operation), "Module transaction failed");
-    emit NewTxn(data);
+    emit NewTxn();
   }
 }
