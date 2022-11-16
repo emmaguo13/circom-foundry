@@ -1,10 +1,8 @@
 pragma solidity ^0.8.0;
 
 import "zodiac/core/Module.sol";
-// import "zodiac/guard/BaseGuard.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
-// import "./MerkleTreeWithHistory.sol";
 import {GnosisSafe} from "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
 
 contract PrivateModule is Module, ReentrancyGuard {
@@ -96,9 +94,6 @@ contract PrivateModule is Module, ReentrancyGuard {
     return threshold;
   }
 
-  // joining as a signer is now not private 
-  // TODO: what is the username supposed to be
-  // TODO: error code for not being a part of owners ?
   function joinAsSigner(uint256 identityCommitment, bytes32 username) external {
     // check if address is from owners
     if (possibleMember[msg.sender] == true) {
