@@ -119,7 +119,7 @@ contract PrivateModule is Module, ReentrancyGuard {
   /// @param nullifierHashes nullifier hash
   /// @param proofs We pass in the proof, verify it, and then execute 
   /// @param votes the vote on the given transaction
-  // TODO: first test: just one user, one proof
+
   function executeTransaction(
     address to, // this is the target address, eg if you want the txn to push a button, this is the button
     // for us, don't we want the target to be anything?
@@ -144,14 +144,8 @@ contract PrivateModule is Module, ReentrancyGuard {
     assert(nullifierLen == proofLen);
     assert(proofLen == votesLen);
 
-    // have a map from identity to public key when they sign on! also pass in public key with the ecrecover stuff
-    // doesnt work because we cant pass in pub key here.. 
-    // or we can use semaphore for id gen, and use my own merkle tree stuff 
-    // but how do we check the semaphore id is the same as the public key?? 
-    // or i can have a mapping of ids to pubkeys, but also pass in the mapping to my proof, 
-    // but this would have to be from a valid source, i could have the frontend generate some
-    // valid secret value maybe?? 
-    // TODO: check after its been verified...
+    assert(merkleRootLen == threshold);
+
     for (uint256 i = 0; i < votesLen; i ++) {
       semaphore.verifyProof(groupId, merkleTreeRoots[i], votes[i], nullifierHashes[i], groupId, proofs[i]);
     }
