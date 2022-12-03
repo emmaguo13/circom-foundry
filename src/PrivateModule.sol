@@ -10,8 +10,9 @@ contract PrivateModule is Module, ReentrancyGuard {
   ISemaphore public semaphore;
   GnosisSafe public safe;
 
-  uint256 groupId;
+  uint256 public groupId;
   uint256 threshold;
+  uint256 public nonce;
 
   // maps identity committment to username
   mapping(uint256 => bytes32) users;
@@ -55,6 +56,7 @@ contract PrivateModule is Module, ReentrancyGuard {
     setAllowedOwners();
     groupId = _groupId;
     threshold = safe.getThreshold();
+    nonce = 0;
     semaphore.createGroup(groupId, 20, 0, address(this));
 
     setUp(initParams);
@@ -135,15 +137,18 @@ contract PrivateModule is Module, ReentrancyGuard {
     uint256 proofLen = proofs.length;
     uint256 votesLen = votes.length;
 
-    assert(merkleRootLen == nullifierLen);
-    assert(nullifierLen == proofLen);
-    assert(proofLen == votesLen);
+    require(merkleRootLen == nullifierLen, "wrong num of merkle roots/nuls");
+    require(nullifierLen == proofLen, "wrong num of proofs/nuls");
+    require(proofLen == votesLen, "wrong num of merkle proofs/votes");
+    require(merkleRootLen == threshold, "threshold not met");
 
-    assert(merkleRootLen == threshold);
 
     for (uint256 i = 0; i < votesLen; i ++) {
+      require(uint256(votes[i]) == nonce, "wrong_nonce");
       semaphore.verifyProof(groupId, merkleTreeRoots[i], votes[i], nullifierHashes[i], groupId, proofs[i]);
     }
+
+    nonce += 1;
 
     require(exec(to, value, data, operation), "Module transaction failed");
     emit NewTxn();

@@ -48,7 +48,7 @@ contract PrivateTest is Test {
 
     function testThreshold() external {
         uint256 threshold = module.getThreshold();
-        assertEq(threshold, 2);
+        assertEq(threshold, 1);
         emit ThresholdEmitted(threshold);
     }
 
