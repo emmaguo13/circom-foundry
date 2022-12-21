@@ -75,8 +75,8 @@ contract PrivateModule is Module, ReentrancyGuard {
 
     require(_avatar != address(0), "Avatar can not be zero address");
     require(_target != address(0), "Target can not be zero address");
-    setAvatar(_owner);
-    setTarget(_owner);
+    setAvatar(_avatar);
+    setTarget(_target);
 
     transferOwnership(_owner);
 
@@ -126,7 +126,7 @@ contract PrivateModule is Module, ReentrancyGuard {
 
     uint256[] memory merkleTreeRoots,
     uint256[] memory nullifierHashes,
-    uint256[8][] memory proofs,
+    uint256[8][] calldata proofs,
     bytes32[] memory votes
   ) public {
 
