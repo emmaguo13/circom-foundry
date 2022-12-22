@@ -40,7 +40,7 @@ contract PrivateModule is Module, ReentrancyGuard {
   constructor(
     address _owner,
     address payable _avatar,
-    address _target,
+    address payable _target,
     address _semaphore,
     uint256 _groupId
   )  {

@@ -31,9 +31,9 @@ contract PrivateTest is Test {
         // address avatar = 0xbfd0495c60772f42aa70a9be73af67b26678a530; 
         // address of our actual safe 
         address payable avatar = payable(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
-        address target = 0x45dE2bB45Cac6cdC6a750eCB0Fd57421bC603546;
+        address payable target = payable(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
         address semaphore = 0x5259d32659F1806ccAfcE593ED5a89eBAb85262f;
-        uint256 groupId = 28;
+        uint256 groupId = 29;
 
         module = new PrivateModule(owner, avatar, target, semaphore, groupId);
     }

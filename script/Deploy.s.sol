@@ -12,7 +12,7 @@ contract Deploy is Script {
   /// @notice The main script entrypoint
   function run() external {
     vm.startBroadcast(0x0ACBa2baA02F59D8a3d738d97008f909fB92e9FB);
-    PrivateModule privModule = new PrivateModule(address(0x0ACBa2baA02F59D8a3d738d97008f909fB92e9FB), payable(address(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f)), payable(address(0x45dE2bB45Cac6cdC6a750eCB0Fd57421bC603546)), address(0x5259d32659F1806ccAfcE593ED5a89eBAb85262f), 27);
+    PrivateModule privModule = new PrivateModule(address(0x0ACBa2baA02F59D8a3d738d97008f909fB92e9FB), payable(address(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f)), payable(address(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f)), address(0x5259d32659F1806ccAfcE593ED5a89eBAb85262f), 28);
     vm.stopBroadcast();
   }
 }
