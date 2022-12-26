@@ -17,6 +17,7 @@ contract PrivateTest is Test {
 
     event sigEmitted();
     event ThresholdEmitted(uint256 threshold);
+    event NonceEmitted(bytes32 nonce);
 
     function setUp() external {
         /*
@@ -33,7 +34,7 @@ contract PrivateTest is Test {
         address payable avatar = payable(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
         address payable target = payable(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
         address semaphore = 0x5259d32659F1806ccAfcE593ED5a89eBAb85262f;
-        uint256 groupId = 29;
+        uint256 groupId = 31;
 
         module = new PrivateModule(owner, avatar, target, semaphore, groupId);
     }
@@ -50,6 +51,11 @@ contract PrivateTest is Test {
         uint256 threshold = module.getThreshold();
         assertEq(threshold, 1);
         emit ThresholdEmitted(threshold);
+    }
+
+    function testNonceBytes32() external { 
+        bytes32 vote = 0x0000000000000000000000000000000000000000000000000000000000000001;
+        assertEq(uint256(vote), 1);
     }
 
     // function testExecute() external {

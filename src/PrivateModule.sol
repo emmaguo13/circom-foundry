@@ -96,6 +96,10 @@ contract PrivateModule is Module, ReentrancyGuard {
     return threshold;
   }
 
+  function bytes32Nonce() external returns (bytes32) {
+    return bytes32(nonce);
+  }
+
   function joinAsSigner(uint256 identityCommitment, bytes32 username) external {
     // check if address is from owners
     if (possibleMember[msg.sender] == true) {
@@ -140,7 +144,7 @@ contract PrivateModule is Module, ReentrancyGuard {
     require(merkleRootLen == nullifierLen, "wrong num of merkle roots/nuls");
     require(nullifierLen == proofLen, "wrong num of proofs/nuls");
     require(proofLen == votesLen, "wrong num of merkle proofs/votes");
-    require(merkleRootLen == threshold, "threshold not met");
+    require(merkleRootLen >= threshold, "threshold not met");
 
 
     for (uint256 i = 0; i < votesLen; i ++) {
