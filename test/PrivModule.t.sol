@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 
 import {PrivModule} from "src/PrivModule.sol";
-import {Semaphore} from "@semaphore-protocol/contracts/Semaphore.sol";
+import "@semaphore-protocol/contracts/Semaphore.sol";
+import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 import "zodiac/core/Module.sol";
 
 contract PrivTest is Test {
@@ -26,8 +27,8 @@ contract PrivTest is Test {
         address payable target = payable(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
         // address semaphore = 0x5259d32659F1806ccAfcE593ED5a89eBAb85262f;
 
-        Verifier[] memory verifiers = new Verifier[](1);
-        verifiers[0] = Verifier({merkleTreeDepth: 20, contractAddress: address(0x2a96c5696F85e3d2aa918496806B5c5a4D93E099)});
+        ISemaphore.Verifier[] memory verifiers = new ISemaphore.Verifier[](1);
+        verifiers[0] = ISemaphore.Verifier({merkleTreeDepth: 20, contractAddress: address(0x2a96c5696F85e3d2aa918496806B5c5a4D93E099)});
         semaphore = new Semaphore(verifiers);
 
         module = new PrivModule(owner, avatar, target, address(semaphore));

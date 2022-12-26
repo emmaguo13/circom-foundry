@@ -2,3 +2,4 @@
 @openzeppelin/contracts-upgradeable=lib/openzeppelin-contracts-upgradeable/contracts/
 @openzeppelin/contracts=lib/openzeppelin-contracts/contracts/
 @semaphore-protocol=lib/semaphore/packages/contracts/
+@zk-kit/incremental-merkle-tree.sol=lib/zk-kit/packages/incremental-merkle-tree.sol/contracts/
