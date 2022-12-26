@@ -22,3 +22,6 @@
 [submodule "lib/circom-ecdsa"]
 	path = lib/circom-ecdsa
 	url = https://github.com/0xPARC/circom-ecdsa
+[submodule "lib/zk-kit"]
+	path = lib/zk-kit
+	url = https://github.com/privacy-scaling-explorations/zk-kit
