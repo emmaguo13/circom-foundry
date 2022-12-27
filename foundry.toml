@@ -14,3 +14,9 @@ runs = 1_000
 # Extreme Fuzzing CI Profile :P
 [profile.fuzz.ci]
 runs = 100_000
+
+[rpc_endpoints]
+goerli = "${GOERLI_RPC_URL}"
+
+[etherscan]
+goerli = { key = "${ETHERSCAN_API_KEY}" }

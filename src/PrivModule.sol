@@ -36,6 +36,8 @@ contract PrivModule is Module, ReentrancyGuard {
         address target
     );
 
+    event DebugGroup(address sender);
+
     error SignerAddFailed();
     error GroupCreateFailed();
 
@@ -103,7 +105,7 @@ contract PrivModule is Module, ReentrancyGuard {
     {
         if (isOwner[msg.sender] == true) {
             semaphore.createGroup(groupId, 20, 0, address(this));
-
+            emit DebugGroup(msg.sender);
             // add all of the safe owners to the newly created group
             uint256 len = identities.length;
             for (uint256 i = 0; i < len; i++) {
@@ -111,7 +113,7 @@ contract PrivModule is Module, ReentrancyGuard {
                 uint256 id = identities[i].identityCommitment;
                 bytes32 user = identities[i].username;
                 semaphore.addMember(groupId, id);
-                emit NewUser(id, user);
+                // emit NewUser(id, user);
             }
             groupId++;
         } else {
@@ -185,7 +187,7 @@ contract PrivModule is Module, ReentrancyGuard {
             );
         }
 
-        require(exec(to, value, data, operation), "Module transaction failed");
+        // require(exec(to, value, data, operation), "Module transaction failed");
         emit NewTxn();
     }
 }
