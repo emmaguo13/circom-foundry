@@ -7,6 +7,7 @@
 solc_version = '0.8.0'
 auto_detect_solc = false
 optimizer_runs = 1_000
+# libraries = ["lib/zk-kit/packages/incremental-merkle-tree.sol/contracts/IncrementalBinaryTree.sol:IncrementalBinaryTree:0x61AE89E372492e53D941DECaaC9821649fa9B236"]
 
 [fuzz]
 runs = 1_000

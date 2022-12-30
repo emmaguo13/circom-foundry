@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import "zodiac/core/Module.sol";
+import "@gnosis.pm/zodiac/contracts/core/Module.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 import {GnosisSafe} from "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";

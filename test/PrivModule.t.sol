@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
 
-import {PrivModule} from "srccfo/PrivModule.sol";
+import {PrivModule} from "src/PrivModule.sol";
 import "@semaphore-protocol/contracts/Semaphore.sol";
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 import "zodiac/core/Module.sol";
@@ -34,23 +34,23 @@ contract PrivTest is Test {
         verifiers[0] = ISemaphore.Verifier({merkleTreeDepth: 20, contractAddress: address(0x2a96c5696F85e3d2aa918496806B5c5a4D93E099)});
         semaphore = new Semaphore(verifiers);
 
-        module = new PrivModule(owner, avatar, target, address(semaphore));
-        moduleExistingSema = new PrivModule(owner, avatar, target, existingSemaphore);
+        module = new PrivModule(owner, avatar, target, address(semaphore), 0);
+        moduleExistingSema = new PrivModule(owner, avatar, target, existingSemaphore, 33);
 
         // add one signer 
-        bytes32 user = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        uint256 idCom = 20183259997866222879589925831142697062020548183248584087151364292929346471340;
+        // bytes32 user = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        // uint256 idCom = 20183259997866222879589925831142697062020548183248584087151364292929346471340;
 
-        vm.prank(sender);
+        // vm.prank(sender);
 
-        module.joinAsSigner(idCom, user);
+        // module.joinAsSigner(idCom, user);
 
-        prevGroup = module.groupId();
-        vm.expectEmit(true, false, false, false);
-        emit DebugGroup(sender);
-        // create group
-        vm.prank(sender);
-        module.newGroup();
+        // prevGroup = module.groupId();
+        // vm.expectEmit(true, false, false, false);
+        // emit DebugGroup(sender);
+        // // create group
+        // vm.prank(sender);
+        // module.newGroup();
 
     }
 
@@ -73,6 +73,7 @@ contract PrivTest is Test {
         vm.prank(sender);
         module.newGroup();
         assertEq(module.groupId(), groupId + 1);
+        // semaphore.createGroup(groupId, 20, 0, address(module));
     }
 
     function testJoinSigner() external {
@@ -94,62 +95,98 @@ contract PrivTest is Test {
         assertEq(usernameFromArray, user);
 
         // vm.expectEmit(id, user);
+
+        uint256 groupId = module.groupId();
+        vm.prank(sender);
+        module.newGroup();
+        assertEq(module.groupId(), groupId + 1);
     }
 
     function testExecuteWithExistingSema() external {
 
-        address to = address(0x3be0dDA9B3657B63c2cd9e836E41903c97518088);
-        uint256 value = 0;
-        bytes memory data = abi.encodePacked('');
-        Enum.Operation operation = Enum.Operation.Call;
-        // get the last group id
-        uint256 id = 30;
+        // address to = address(0x3be0dDA9B3657B63c2cd9e836E41903c97518088);
+        // uint256 value = 0;
+        // bytes memory data = abi.encodePacked('');
+        // Enum.Operation operation = Enum.Operation.Call;
+        // // get the last group id
+        // uint256 id = 33;
 
-        uint256[] memory merkleTreeRoots = new uint256[](1);
+        // uint256[] memory merkleTreeRoots = new uint256[](1);
 
-        merkleTreeRoots[0] = 4591141196456176864016915754547308561022255871897265820863602651731627419971;
+        // merkleTreeRoots[0] = 4591141196456176864016915754547308561022255871897265820863602651731627419971;
     
-        uint256[] memory nullifierHashes = new uint256[](1);
-        nullifierHashes[0] =
-            8363863075771417285303397312265891334803309192742201822669436335930109067480;
+        // uint256[] memory nullifierHashes = new uint256[](1);
+        // nullifierHashes[0] =
+        //     8363863075771417285303397312265891334803309192742201822669436335930109067480;
 
-        uint256[8][] memory proofs = new uint256[8][](1);
-        proofs[0] =
-            [4501250092774754588277782408199284919621655624731223515709787123585750970099,
-            11872540919520730491855399661987038349380871157913700012206520154671830106336,
-            4096679577595349589020565496492301665750623154962623804725927941819914064646,
-            11886871190541293846688455763975845312666291809268989568352005082651973282963,
-            11943816227650442890924638212412059462745743796759023027233377679450785230696,
-            21059114836553283126071859898849801389079489649159339316404450398477830628839,
-            11142502841369677699385023476113183317547038989380470732130496879296379522927,
-            9949577872920225383545955658998525901036026602826597612144797572654051651774];
+        // uint256[8][] memory proofs = new uint256[8][](1);
+        // proofs[0] =
+        //     [4501250092774754588277782408199284919621655624731223515709787123585750970099,
+        //     11872540919520730491855399661987038349380871157913700012206520154671830106336,
+        //     4096679577595349589020565496492301665750623154962623804725927941819914064646,
+        //     11886871190541293846688455763975845312666291809268989568352005082651973282963,
+        //     11943816227650442890924638212412059462745743796759023027233377679450785230696,
+        //     21059114836553283126071859898849801389079489649159339316404450398477830628839,
+        //     11142502841369677699385023476113183317547038989380470732130496879296379522927,
+        //     9949577872920225383545955658998525901036026602826597612144797572654051651774];
 
-        bytes32[] memory votes = new bytes32[](1);
-        votes[0] = bytes32(uint256(30));
+        // bytes32[] memory votes = new bytes32[](1);
+        // votes[0] = bytes32(uint256(33));
 
-        moduleExistingSema.executeTransaction(
-            to,
-            value,
-            data,
-            operation,
-            id,
-            merkleTreeRoots,
-            nullifierHashes,
-            proofs,
-            votes
-        );
-    }
+        // moduleExistingSema.executeTransaction(
+        //     to,
+        //     value,
+        //     data,
+        //     operation,
+        //     id,
+        //     merkleTreeRoots,
+        //     nullifierHashes,
+        //     proofs,
+        //     votes
+        // );
 
-    function testExecute() external {
+        bytes32 user = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        uint256 id = 20183259997866222879589925831142697062020548183248584087151364292929346471340;
 
-        assertEq(module.groupId(), prevGroup + 1);
+        vm.prank(sender);
+
+        moduleExistingSema.joinAsSigner(id, user);
+
+        uint256 idFromArray;
+        uint256 identityFromArray;
+        bytes32 usernameFromArray;
+
+        // get the newly joined signer
+        (idFromArray, identityFromArray, usernameFromArray) = moduleExistingSema.identities(0);
+
+        assertEq(identityFromArray, id);
+        assertEq(usernameFromArray, user);
+
+        // vm.expectEmit(id, user);
+
+        uint256 groupId = 33;
+        vm.prank(sender);
+        moduleExistingSema.newGroup();
+        // assertEq(module.groupId(), groupId + 1);
+
+        // emit MemberAdded(groupId, index, identityCommitment, merkleTreeRoot);
+
+        //  groups[groupId].merkleRootCreationDates[merkleTreeRoot]
+    //     struct Group {
+    //     address admin;
+    //     uint256 merkleRootDuration;
+    //     mapping(uint256 => uint256) merkleRootCreationDates;
+    //     mapping(uint256 => bool) nullifierHashes;
+    // }
+    //     (admin, merkleRootDuration, merkleRootCreationDates, nullifierHashes) = moduleExistingSema.identities(0);
+        
+        // semaphore.createGroup(groupId, 20, 0, address(module));
 
         address to = address(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
         uint256 value = 0;
         bytes memory data = abi.encodePacked('');
         Enum.Operation operation = Enum.Operation.Call;
         // get the last group id
-        uint256 id = module.groupId() - 1;
 
         uint256[] memory merkleTreeRoots = new uint256[](1);
 
@@ -173,19 +210,115 @@ contract PrivTest is Test {
             ];
 
         bytes32[] memory votes = new bytes32[](1);
-        votes[0] = bytes32(uint256(id));
+        votes[0] = bytes32(uint256(33));
 
-        module.executeTransaction(
+        // semaphore.createGroup(0, 20, 0, address(module));
+
+        // semaphore.verifyProof(
+        //         0,
+        //         merkleTreeRoots[0],
+        //         votes[0],
+        //         nullifierHashes[0],
+        //         0,
+        //         proofs[0]
+        //     );
+
+        moduleExistingSema.executeTransaction(
             to,
             value,
             data,
             operation,
-            id,
+            groupId,
             merkleTreeRoots,
             nullifierHashes,
             proofs,
             votes
         );
+    
+    }
+
+    function testExecute() external {
+
+        
+        
+        bytes32 user = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        uint256 id = 20183259997866222879589925831142697062020548183248584087151364292929346471340;
+
+        vm.prank(sender);
+
+        module.joinAsSigner(id, user);
+
+        uint256 idFromArray;
+        uint256 identityFromArray;
+        bytes32 usernameFromArray;
+
+        // get the newly joined signer
+        (idFromArray, identityFromArray, usernameFromArray) = module.identities(0);
+
+        assertEq(identityFromArray, id);
+        assertEq(usernameFromArray, user);
+
+        // vm.expectEmit(id, user);
+
+        uint256 groupId = module.groupId();
+        // vm.prank(sender);
+        // module.newGroup();
+        // assertEq(module.groupId(), groupId + 1);
+        
+        // semaphore.createGroup(groupId, 20, 0, address(module));
+
+        address to = address(0xC3ACf93b1AAA0c65ffd484d768576F4ce106eB4f);
+        uint256 value = 0;
+        bytes memory data = abi.encodePacked('');
+        Enum.Operation operation = Enum.Operation.Call;
+        // get the last group id
+
+        uint256[] memory merkleTreeRoots = new uint256[](1);
+
+        merkleTreeRoots[0] = 4591141196456176864016915754547308561022255871897265820863602651731627419971;
+    
+        uint256[] memory nullifierHashes = new uint256[](1);
+        nullifierHashes[0] =
+            2623183898452010234004928810760845778301182165458782784055156900027930450068;
+
+        uint256[8][] memory proofs = new uint256[8][](1);
+        proofs[0] =
+            [
+                15082228044817502732539667749392315696461963041265415019527164656331473466925,
+                10025323472904820886641259258654776098857513218637983877020561495623509275132,
+                20943701449268585201870132928364517028435037697216364836543976532508469579947,
+                20196322734005938692677220189773432867404957735761740617474786558302188490812,
+                18608453172398675174908678797459461559496701600760736799811951413150293706142,
+                14382591325781110174980591710154678889261509457306651181488501996237786115027,
+                1675811793008655022663770832334432015046193122071528090239076896694793918228,
+                17678590417784343246920695269286752809320878201559866912713252910363344203636
+            ];
+
+        bytes32[] memory votes = new bytes32[](1);
+        votes[0] = bytes32(uint256(0));
+
+        semaphore.createGroup(0, 20, 0, address(module));
+
+        semaphore.verifyProof(
+                0,
+                merkleTreeRoots[0],
+                votes[0],
+                nullifierHashes[0],
+                0,
+                proofs[0]
+            );
+
+        // module.executeTransaction(
+        //     to,
+        //     value,
+        //     data,
+        //     operation,
+        //     groupId,
+        //     merkleTreeRoots,
+        //     nullifierHashes,
+        //     proofs,
+        //     votes
+        // );
     }
 
 }

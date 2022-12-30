@@ -1,8 +1,9 @@
-secret.json
-
 cache/
 out/
 node_modules/
+artifacts/
+utils/
+lib/
 
 # Ignore Environment Variables!
 .env
@@ -19,3 +20,5 @@ broadcast
 # Ignore local misc files
 .DS_Store
 *.pem
+
+secret.json
